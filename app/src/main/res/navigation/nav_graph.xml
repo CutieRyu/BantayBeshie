@@ -1,0 +1,35 @@
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.bantaybeshie.ui.home.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/activityLogFragment"
+        android:name="com.example.bantaybeshie.ui.activitylog.ActivityLogsFragment"
+        android:label="Activity Logs"
+        tools:layout="@layout/fragment_activity_log" />
+
+    <fragment
+        android:id="@+id/contactsFragment"
+        android:name="com.example.bantaybeshie.ui.contacts.EmergencyContactsFragment"
+        android:label="Emergency Contacts"
+        tools:layout="@layout/fragment_emergency_contacts" />
+
+    <fragment
+        android:id="@+id/addContactFragment"
+        android:name="com.example.bantaybeshie.ui.addcontact.AddContactFragment"
+        android:label="Add Contact"
+        tools:layout="@layout/fragment_add_contact" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.bantaybeshie.ui.settings.SettingsFragment"
+        android:label="Settings"
+        tools:layout="@layout/fragment_settings" />
+</navigation>

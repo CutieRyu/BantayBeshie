@@ -1,0 +1,113 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_gradient"
+    android:clipChildren="false"
+    android:clipToPadding="false">
+
+    <!-- 🔹 Camera preview -->
+    <FrameLayout
+        android:id="@+id/cameraContainer"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_marginTop="40dp"
+        android:background="#1E1E1E"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.camera.view.PreviewView
+            android:id="@+id/previewView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:keepScreenOn="true" />
+
+        <com.example.bantaybeshie.OverlayView
+            android:id="@+id/overlayView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent" />
+
+        <TextView
+        android:id="@+id/resultText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#80000000"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:padding="8dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:text="Initializing..." />
+
+    </FrameLayout>
+
+    <!-- Mode Selection Buttons -->
+    <LinearLayout
+        android:id="@+id/modeButtons"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cameraContainer">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnWalking"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="🚶‍♂️ Walking"
+            android:textColor="@android:color/white"
+            app:backgroundTint="#4CAF50" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRoom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="🏠 In a Room"
+            android:textColor="@android:color/white"
+            app:backgroundTint="#2196F3" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnTranspo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="🚗On PUV's"
+            android:textColor="@android:color/white"
+            app:backgroundTint="#FF9800" />
+
+    </LinearLayout>
+
+    <!--  SOS Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSOS"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginBottom="80dp"
+        android:text="SOS"
+        android:textColor="@android:color/white"
+        android:textSize="28sp"
+        app:backgroundTint="#E53935"
+        app:cornerRadius="60dp"
+        app:elevation="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <include
+        layout="@layout/include_fab_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

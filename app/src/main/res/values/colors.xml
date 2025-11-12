@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="md_theme_primary">#7209B7</color>
+    <color name="md_theme_secondary">#3A0CA3</color>
+    <color name="md_theme_error">#E53935</color>
+    <color name="md_theme_background">#121212</color>
+    <color name="button_green">#4CAF50</color>   <!-- Activity Log -->
+    <color name="button_blue">#2196F3</color>
+    <color name="md_theme_light_tertiary">#80CBC4</color>
+    <color name="md_theme_light_outline">#B0BEC5</color>
+    <color name="md_theme_light_primaryContainer">#A5D6A7</color>
+    <color name="red_400">#C80707</color>
+    <color name="purple_200">#37046A</color>
+    <color name="purple_500">#6905C3</color>
+    <color name="green_400">#096B02</color>
+    <color name="teal_400">#08976E</color>
+    <color name="gray">#FE404040</color>
+</resources>
