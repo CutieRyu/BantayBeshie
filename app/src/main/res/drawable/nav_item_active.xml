@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <size android:width="52dp" android:height="52dp"/>
+
+    <solid android:color="#4035B3FF"/> <!-- transparent blue glow -->
+    <corners android:radius="50dp"/>
+
+</shape>

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
@@ -53,6 +54,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation("androidx.navigation:navigation-fragment-ktx:2.8.3")
     implementation("androidx.navigation:navigation-ui-ktx:2.8.3")
+    implementation("androidx.gridlayout:gridlayout:1.1.0")
 
     // CameraX
     implementation("androidx.camera:camera-core:1.3.4")
@@ -64,15 +66,25 @@ dependencies {
     // TFLite Task Library (Vision)
     implementation ("org.tensorflow:tensorflow-lite-task-vision:0.4.4")
 
-    // TFLite base (optional, but fine)
+    // TFLite base
     implementation ("org.tensorflow:tensorflow-lite:2.12.0")
 
     // Material
     implementation ("com.google.android.material:material:1.12.0")
 
-    // Navigation (you already use these)
+    // Navigation
     implementation ("androidx.navigation:navigation-fragment-ktx:2.7.7")
     implementation ("androidx.navigation:navigation-ui-ktx:2.7.7")
+
+    // Room
+    implementation("androidx.room:room-runtime:2.8.3")
+    kapt("androidx.room:room-compiler:2.8.3")
+    implementation("androidx.room:room-ktx:2.8.3")
+
+    // Location
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

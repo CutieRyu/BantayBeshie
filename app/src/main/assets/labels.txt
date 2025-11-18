@@ -1,3 +1,5 @@
-person
-gun
 knife
+person
+person-like
+pistol
+undefined

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bottomNavWrapper"
+    android:layout_width="match_parent"
+    android:layout_height="85dp"
+    android:padding="8dp">
+
+    <LinearLayout
+        android:id="@+id/bottomNavBar"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:gravity="center"
+        android:background="@drawable/nav_bar_glass"
+        android:elevation="16dp">
+
+        <!-- CONTACTS -->
+        <RelativeLayout
+            android:id="@+id/navContactsWrapper"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <View
+                android:id="@+id/indicatorContacts"
+                android:layout_width="40dp"
+                android:layout_height="4dp"
+                android:background="@drawable/nav_indicator"
+                android:visibility="gone"
+                android:layout_alignParentBottom="true"/>
+
+            <ImageView
+                android:id="@+id/navContacts"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_contacts"
+                android:tint="@android:color/white"/>
+        </RelativeLayout>
+
+        <!-- ADD CONTACT -->
+        <RelativeLayout
+            android:id="@+id/navAddContactWrapper"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <View
+                android:id="@+id/indicatorAdd"
+                android:layout_width="40dp"
+                android:layout_height="4dp"
+                android:background="@drawable/nav_indicator"
+                android:visibility="gone"
+                android:layout_alignParentBottom="true"/>
+
+            <ImageView
+                android:id="@+id/navAddContact"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_add"
+                android:tint="@android:color/white"/>
+        </RelativeLayout>
+
+        <!-- HOME -->
+        <RelativeLayout
+            android:id="@+id/navHomeWrapper"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <View
+                android:id="@+id/indicatorHome"
+                android:layout_width="40dp"
+                android:layout_height="4dp"
+                android:background="@drawable/nav_indicator"
+                android:visibility="gone"
+                android:layout_alignParentBottom="true"/>
+
+            <ImageView
+                android:id="@+id/navHome"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_home"
+                android:tint="@android:color/white"/>
+        </RelativeLayout>
+
+        <!-- ACTIVITY LOG -->
+        <RelativeLayout
+            android:id="@+id/navActivityLogWrapper"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <View
+                android:id="@+id/indicatorLogs"
+                android:layout_width="40dp"
+                android:layout_height="4dp"
+                android:background="@drawable/nav_indicator"
+                android:visibility="gone"
+                android:layout_alignParentBottom="true"/>
+
+            <ImageView
+                android:id="@+id/navActivityLog"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_log"
+                android:tint="@android:color/white"/>
+        </RelativeLayout>
+
+        <!-- SETTINGS -->
+        <RelativeLayout
+            android:id="@+id/navSettingsWrapper"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <View
+                android:id="@+id/indicatorSettings"
+                android:layout_width="40dp"
+                android:layout_height="4dp"
+                android:background="@drawable/nav_indicator"
+                android:visibility="gone"
+                android:layout_alignParentBottom="true"/>
+
+            <ImageView
+                android:id="@+id/navSettings"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_settings"
+                android:tint="@android:color/white"/>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
