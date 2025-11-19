@@ -17,5 +17,6 @@ interface ContactsDao {
     fun getAllContacts(): LiveData<List<ContactEntity>>
 
     @Query("SELECT * FROM contacts")
-    suspend fun getAllContactsList(): List<ContactEntity>
+    fun getAllContactsList(): List<ContactEntity>
+
 }

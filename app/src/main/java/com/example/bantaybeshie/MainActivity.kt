@@ -1,6 +1,7 @@
 package com.example.bantaybeshie
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.RectF
@@ -9,6 +10,7 @@ import android.os.Bundle
 import android.telephony.SmsManager
 import android.util.Log
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
@@ -41,40 +43,37 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "MainActivity"
 
+        private var isPopupVisible = false
+
         private const val MODEL_SIZE = 640
         private const val NUM_CHANNELS = 9
         private const val NUM_ANCHORS = 8400
 
+        private const val SMS_COOLDOWN = 30_000L
+        private const val EMAIL_COOLDOWN = 8_000L
+
+        private var lastSmsAt = 0L
+        private var lastEmailAt = 0L
+
         private val LABELS = listOf("knife", "person", "person-like", "pistol", "undefined")
     }
 
-    // Views attached by HomeFragment
     private var homePreview: PreviewView? = null
     private var homeOverlay: OverlayView? = null
     private var homeResult: TextView? = null
 
-    // Navigation
     private lateinit var nav: NavController
-
-    // Camera
     private var cameraProvider: ProcessCameraProvider? = null
     private val cameraExecutor = Executors.newSingleThreadExecutor()
     private lateinit var yuv: YuvToRgbConverter
 
-    // TFLite
     private var tflite: Interpreter? = null
-
-    // Settings
     private var sensitivity = 0.3f
 
-    // Location + SMS
     private lateinit var fused: FusedLocationProviderClient
     private lateinit var locReq: LocationRequest
-    private var lastSmsAt = 0L
-    private val SMS_COOLDOWN = 30_000L
     private val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
-    // Permissions
     private val permissionsLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
             if (allPermissionsGranted()) startCamera()
@@ -89,18 +88,20 @@ class MainActivity : AppCompatActivity() {
         nav = navHost.navController
         NavBarHelper.setup(findViewById(R.id.bottomNavBar), nav, "home")
 
-        // Converters + GPS
+        // Utils
         yuv = YuvToRgbConverter(this)
         fused = LocationServices.getFusedLocationProviderClient(this)
-        locReq = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1500)
-            .setMinUpdateIntervalMillis(700).build()
 
-        // Load model
+        locReq = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1500)
+            .setMinUpdateIntervalMillis(700)
+            .build()
+
+        // Load TFLite model
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val buf = FileUtil.loadMappedFile(this@MainActivity, "bantaybeshie_model.tflite")
                 tflite = Interpreter(buf)
-                Log.d(TAG, "Model loaded: output = [1,9,8400]")
+                Log.d(TAG, "Model loaded successfully.")
             } catch (e: Exception) {
                 Log.e(TAG, "Model load failed: ${e.message}")
             }
@@ -113,9 +114,9 @@ class MainActivity : AppCompatActivity() {
         tflite?.close()
     }
 
-    // --------------------------------------------------------------------
-    // Attach / Detach HomeFragment views
-    // --------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
+    // HomeFragment Attach/Detach
+    // ---------------------------------------------------------------------------------------------
     fun attachHomeViews(preview: PreviewView, overlay: OverlayView, resultText: TextView) {
         homePreview = preview
         homeOverlay = overlay
@@ -138,11 +139,11 @@ class MainActivity : AppCompatActivity() {
         stopCamera()
     }
 
-    // --------------------------------------------------------------------
-    // Camera Pipeline
-    // --------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
+    // Camera
+    // ---------------------------------------------------------------------------------------------
     private fun startCamera() {
-        val prev = homePreview ?: return
+        val previewView = homePreview ?: return
 
         val providerFuture = ProcessCameraProvider.getInstance(this)
         providerFuture.addListener({
@@ -150,7 +151,7 @@ class MainActivity : AppCompatActivity() {
             cameraProvider?.unbindAll()
 
             val preview = Preview.Builder().build().apply {
-                setSurfaceProvider(prev.surfaceProvider)
+                setSurfaceProvider(previewView.surfaceProvider)
             }
 
             val analysis = ImageAnalysis.Builder()
@@ -170,7 +171,6 @@ class MainActivity : AppCompatActivity() {
                 preview,
                 analysis
             )
-
         }, ContextCompat.getMainExecutor(this))
     }
 
@@ -178,11 +178,43 @@ class MainActivity : AppCompatActivity() {
         cameraProvider?.unbindAll()
     }
 
-    // --------------------------------------------------------------------
-    // RAW XYWH Detection (Your working logic)
-    // --------------------------------------------------------------------
+    private fun requestLocation(callback: (Location?) -> Unit) {
+        try {
+            fused.lastLocation
+                .addOnSuccessListener { lastLoc ->
+                    if (lastLoc != null) {
+                        callback(lastLoc)
+                    } else {
+                        // Force an active location request
+                        fused.requestLocationUpdates(
+                            locReq,
+                            object : LocationCallback() {
+                                override fun onLocationResult(result: LocationResult) {
+                                    fused.removeLocationUpdates(this)
+                                    callback(result.lastLocation)
+                                }
+                            },
+                            mainLooper
+                        )
+                    }
+                }
+                .addOnFailureListener {
+                    callback(null)
+                }
+        } catch (e: SecurityException) {
+            callback(null)
+        }
+    }
+
+    fun setSensitivity(value: Float) {
+        sensitivity = value
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // YOLO Detection
+    // ---------------------------------------------------------------------------------------------
     private fun runDetection(bitmap: Bitmap) {
-        val tfl = tflite ?: return
+        val interpreter = tflite ?: return
 
         try {
             val resized = Bitmap.createScaledBitmap(bitmap, MODEL_SIZE, MODEL_SIZE, true)
@@ -200,7 +232,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             val out = Array(1) { Array(NUM_CHANNELS) { FloatArray(NUM_ANCHORS) } }
-            tfl.run(buf, out)
+            interpreter.run(buf, out)
 
             val preds = out[0]
             val dets = mutableListOf<OverlayView.DetectionResult>()
@@ -233,17 +265,19 @@ class MainActivity : AppCompatActivity() {
 
                 val rect = RectF(mirroredLeft, top, mirroredRight, bottom)
                 val label = LABELS.getOrNull(clsIdx) ?: "Unknown"
+                val sev = computeSeverity(finalConf)
+                val dist = estimateDistance(rect)
 
+                // Add detection to overlay
                 dets.add(
                     OverlayView.DetectionResult(
-                        rect,
-                        label,
-                        finalConf,
-                        computeSeverity(finalConf),
-                        estimateDistance(rect)
+                        rect, label, finalConf, sev, dist
                     )
                 )
-                Log.d("CONF_LOG", "Detected $label — conf=${"%.4f".format(finalConf)}")
+
+                // 🔥 SEND SMS + EMAIL FOR EVERY DETECTION
+                askUserConfirmation(label, finalConf, sev, dist)
+
             }
 
             runOnUiThread {
@@ -256,10 +290,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // --------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
     // Helpers
-    // --------------------------------------------------------------------
-    private fun computeSeverity(conf: Float): String = when {
+    // ---------------------------------------------------------------------------------------------
+    private fun computeSeverity(conf: Float) = when {
         conf > 0.75f -> "HIGH"
         conf > 0.45f -> "MEDIUM"
         else -> "LOW"
@@ -271,17 +305,38 @@ class MainActivity : AppCompatActivity() {
         return 5f * (1f - relative)
     }
 
-    // Sensitivity from UI
-    fun setSensitivity(value: Float) {
-        sensitivity = value
-    }
-
-    // --------------------------------------------------------------------
-    // SOS + Logging + SMS
-    // --------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
+    // SOS + Logging + SMS + EMAIL
+    // ---------------------------------------------------------------------------------------------
     fun triggerManualSOS() {
         logEvent("Manual SOS", "Triggered by user", LogType.SOS)
-        attemptSendAlert("Manual SOS", 1f, "HIGH", 0f)
+
+        try {
+            fused.lastLocation.addOnSuccessListener { loc ->
+                // If location is null, still send SOS without location
+                val safeLoc = loc ?: null
+
+                attemptSendAlert(
+                    label = "Manual SOS",
+                    conf = 1f,
+                    sev = "HIGH",
+                    dist = 0f,
+                    loc = safeLoc
+                )
+
+                attemptSendEmail(
+                    label = "Manual SOS",
+                    conf = 1f,
+                    sev = "HIGH",
+                    dist = 0f,
+                    loc = safeLoc
+                )
+            }
+        } catch (e: SecurityException) {
+            // If permission error, still send SOS without location
+            attemptSendAlert("Manual SOS", 1f, "HIGH", 0f, null)
+            attemptSendEmail("Manual SOS", 1f, "HIGH", 0f, null)
+        }
     }
 
     fun logEvent(title: String, message: String, type: LogType) {
@@ -297,63 +352,161 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun attemptSendAlert(label: String, conf: Float, sev: String, dist: Float) {
+    // ---------------------------------------------------------------------------------------------
+    // SMS
+    // ---------------------------------------------------------------------------------------------
+    private fun attemptSendAlert(label: String, conf: Float, sev: String, dist: Float, loc: Location?) {
         val now = System.currentTimeMillis()
-        if (now - lastSmsAt < SMS_COOLDOWN) return
-        lastSmsAt = now
-
-        // no GPS permission → send without location
-        if (ContextCompat.checkSelfPermission(
-                this, Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            sendSms(buildMessage(label, conf, sev, dist, null))
+        if (now - lastSmsAt < SMS_COOLDOWN) {
+            Log.d("SMS", "Cooldown")
             return
         }
 
-        fused.requestLocationUpdates(locReq, object : LocationCallback() {
-            override fun onLocationResult(res: LocationResult) {
-                fused.removeLocationUpdates(this)
-                sendSms(buildMessage(label, conf, sev, dist, res.lastLocation))
-            }
-        }, mainLooper)
-    }
+        lastSmsAt = now
+        val message = buildMessage(label, conf, sev, dist, loc)
 
-    private fun buildMessage(label: String, conf: Float, sev: String, dist: Float, loc: Location?): String {
-        val ts = sdf.format(Date())
-        return buildString {
-            append("BantayBeshie Alert\n")
-            append("Type: $label\n")
-            append("Confidence: ${(conf * 100).toInt()}%\n")
-            append("Severity: $sev\n")
-            append("Distance: ${"%.1f".format(dist)}m\n")
-            append("Time: $ts\n")
-            if (loc != null) {
-                append("Location: ${loc.latitude},${loc.longitude}\n")
-                append("Map: https://maps.google.com/?q=${loc.latitude},${loc.longitude}\n")
-            } else append("Location: Unknown\n")
-        }
-    }
 
-    private fun sendSms(message: String) {
         lifecycleScope.launch(Dispatchers.IO) {
-            val contacts = ContactsDatabase.getDatabase(this@MainActivity)
-                .contactsDao().getAllContactsList()
+            try {
+                val contacts = ContactsDatabase.getDatabase(this@MainActivity)
+                    .contactsDao().getAllContactsList()
 
-            val sms = SmsManager.getDefault()
-            for (c in contacts) {
-                sms.sendTextMessage(c.number, null, message, null, null)
+                val sms = SmsManager.getDefault()
+                for (c in contacts) {
+                    sms.sendTextMessage(c.number, null, message, null, null)
+                }
+            } catch (e: Exception) {
+                Log.e("SMS", "Failed: ${e.message}")
             }
         }
     }
 
-    private fun allPermissionsGranted(): Boolean =
-        arrayOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.SEND_SMS
-        ).all {
-            ContextCompat.checkSelfPermission(this, it) ==
-                    PackageManager.PERMISSION_GRANTED
+    // ---------------------------------------------------------------------------------------------
+    // EMAIL
+    // ---------------------------------------------------------------------------------------------
+    private fun attemptSendEmail(label: String, conf: Float, sev: String, dist: Float, loc: Location?) {
+        val now = System.currentTimeMillis()
+        if (now - lastEmailAt < EMAIL_COOLDOWN) {
+            Log.d("EMAIL", "Cooldown")
+            return
         }
+
+        lastEmailAt = now
+
+        val contacts = ContactsDatabase.getDatabase(this)
+            .contactsDao().getAllContactsList()
+            .mapNotNull { it.email }
+            .filter { it.isNotBlank() }
+
+        if (contacts.isEmpty()) {
+            Log.w("EMAIL", "No email contacts available")
+            return
+        }
+
+        val subject = "BantayBeshie Alert: $label"
+        val body = buildMessage(label, conf, sev, dist, loc)
+
+        sendEmailViaGmail(contacts, subject, body)
+    }
+
+    private fun sendEmailViaGmail(recipients: List<String>, subject: String, body: String) {
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "message/rfc822"
+            putExtra(Intent.EXTRA_EMAIL, recipients.toTypedArray())
+            putExtra(Intent.EXTRA_SUBJECT, subject)
+            putExtra(Intent.EXTRA_TEXT, body)
+            setPackage("com.google.android.gm")
+        }
+
+        try {
+            startActivity(intent)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Gmail app not found", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun askUserConfirmation(label: String, conf: Float, sev: String, dist: Float) {
+        if (isPopupVisible) return
+        isPopupVisible = true
+
+        runOnUiThread {
+            val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+            builder.setTitle("Threat Detected")
+
+            val percent = (conf * 100).toInt()
+
+            builder.setMessage(
+                "Type: $label\n" +
+                        "Confidence: $percent%\n" +
+                        "Severity: $sev\n\n" +
+                        "Share your live location with emergency contacts?"
+            )
+
+            builder.setPositiveButton("SEND") { dialog, _ ->
+                requestLocation { loc ->
+                    attemptSendAlert(label, conf, sev, dist, loc)
+                    attemptSendEmail(label, conf, sev, dist, loc)
+                }
+                isPopupVisible = false
+                dialog.dismiss()
+            }
+
+            builder.setNegativeButton("CANCEL") { dialog, _ ->
+                Toast.makeText(this, "Alert canceled.", Toast.LENGTH_SHORT).show()
+                isPopupVisible = false
+                dialog.dismiss()
+            }
+
+            builder.setOnDismissListener { isPopupVisible = false }
+            builder.setCancelable(false)
+
+            builder.show()
+        }
+    }
+
+
+
+    // ---------------------------------------------------------------------------------------------
+    // Build message
+    // ---------------------------------------------------------------------------------------------
+    private fun buildMessage(
+        label: String,
+        conf: Float,
+        sev: String,
+        dist: Float,
+        loc: Location?
+    ): String {
+
+        val lat = loc?.latitude
+        val lon = loc?.longitude
+
+        return buildString {
+            append("🚨 BantayBeshie Alert 🚨\n\n")
+            append("A potential threat has been detected.\n\n")
+            append("• Type: $label\n")
+            append("• Confidence: ${(conf * 100).toInt()}%\n")
+            append("• Severity: $sev\n")
+            append("• Distance: ${"%.1f".format(dist)}m\n")
+            append("• Time: ${sdf.format(Date())}\n\n")
+
+            if (lat != null && lon != null) {
+                append("📍 Location Detected:\n")
+                append("$lat,$lon\n\n")
+                append("Google Maps:\n")
+                append("https://maps.google.com/?q=$lat,$lon\n")
+            } else {
+                append("📍 Location: Not Available\n")
+                append("(GPS still acquiring signal)\n")
+            }
+        }
+    }
+
+
+    private fun allPermissionsGranted() = arrayOf(
+        Manifest.permission.CAMERA,
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.SEND_SMS
+    ).all {
+        ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
+    }
 }

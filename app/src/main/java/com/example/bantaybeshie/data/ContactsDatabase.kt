@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.bantaybeshie.model.ContactEntity
 
-@Database(entities = [ContactEntity::class], version = 1, exportSchema = false)
+@Database(entities = [ContactEntity::class], version = 2, exportSchema = false)
 abstract class ContactsDatabase : RoomDatabase() {
 
     abstract fun contactsDao(): ContactsDao

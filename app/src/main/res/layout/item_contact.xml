@@ -32,6 +32,19 @@
         app:layout_constraintEnd_toStartOf="@id/deleteBtn"
         app:layout_constraintTop_toBottomOf="@id/contactName"/>
 
+    <TextView
+        android:id="@+id/contactEmail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="example@mail.com"
+        android:textColor="#BBBBBB"
+        android:textSize="14sp"
+        android:layout_marginTop="2dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/deleteBtn"
+        app:layout_constraintTop_toBottomOf="@id/contactNumber"/>
+
+
     <!-- DELETE BUTTON (far right) -->
     <ImageView
         android:id="@+id/deleteBtn"

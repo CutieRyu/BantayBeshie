@@ -43,6 +43,17 @@ android {
     aaptOptions{
         noCompress += "tflite"
     }
+
+    packaging {
+        resources {
+            excludes += "META-INF/NOTICE.md"
+            excludes += "META-INF/LICENSE.md"
+            excludes += "META-INF/LICENSE"
+            excludes += "META-INF/NOTICE"
+            excludes += "META-INF/*.kotlin_module"
+        }
+    }
+
 }
 
 dependencies {
@@ -84,7 +95,11 @@ dependencies {
     // Location
     implementation("com.google.android.gms:play-services-location:21.3.0")
 
-
+    // JavaMail for Android
+    implementation("com.sun.mail:android-mail:1.6.7")
+    implementation("com.sun.mail:android-activation:1.6.7")
+    // Encrypted prefs for secure storage
+    implementation("androidx.security:security-crypto:1.1.0-alpha03")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

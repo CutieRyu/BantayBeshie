@@ -40,7 +40,9 @@ class HomeFragment : Fragment() {
         binding.btnRoom.setOnClickListener { main.setSensitivity(0.9f) }
 
         // SOS
-        binding.btnSOS.setOnClickListener { main.triggerManualSOS() }
+        binding.btnSOS.setOnClickListener {
+            (requireActivity() as MainActivity).triggerManualSOS()
+        }
     }
 
     override fun onDestroyView() {

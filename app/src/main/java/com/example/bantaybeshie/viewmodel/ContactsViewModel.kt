@@ -14,9 +14,10 @@ class ContactsViewModel(application: Application) : AndroidViewModel(application
     // LiveData list of contacts for the UI
     val contacts = dao.getAllContacts()
 
-    fun addContact(name: String, number: String) {
+    fun addContact(name: String, number: String, email: String?) {
         viewModelScope.launch {
-            dao.insert(ContactEntity(name = name, number = number))
+            val contact = ContactEntity(name = name, number = number, email = email)
+            dao.insert(contact)
         }
     }
 

@@ -44,7 +44,7 @@ class ContactsFragment : Fragment() {
             // ✅ LOG EVENT HERE
             (requireActivity() as MainActivity).logEvent(
                 title = "Contact Deleted",
-                message = "User deleted ${contact.name}",
+                message = "User deleted ${contact.name} (${contact.email ?: "no email"})",
                 type = LogType.USER_ACTION
             )
 
@@ -71,8 +71,8 @@ class ContactsFragment : Fragment() {
 
             // Optional: log add button click
             (requireActivity() as MainActivity).logEvent(
-                title = "Add Contact Button",
-                message = "User opened add contact screen",
+                title = "Added Emergency Contact",
+                message = "Contact Added Successfully",
                 type = LogType.USER_ACTION
             )
 

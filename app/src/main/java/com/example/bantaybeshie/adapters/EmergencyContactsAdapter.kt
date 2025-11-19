@@ -18,6 +18,7 @@ class EmergencyContactsAdapter(
         fun bind(item: ContactEntity) {
             binding.contactName.text = item.name
             binding.contactNumber.text = item.number
+            binding.contactEmail.text = item.email ?: "No Email"
 
             binding.deleteBtn.setOnClickListener {
                 onDelete(item)
@@ -46,4 +47,3 @@ class EmergencyContactsAdapter(
             oldItem == newItem
     }
 }
-

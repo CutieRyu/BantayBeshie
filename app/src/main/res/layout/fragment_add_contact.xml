@@ -47,7 +47,8 @@
                 android:text="NAME:"
                 android:textColor="@android:color/white"
                 android:textStyle="bold"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"/>
 
             <!-- NAME INPUT -->
             <com.google.android.material.textfield.TextInputLayout
@@ -66,16 +67,14 @@
                     android:textColorHint="#7A7A7A"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- SPACER -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="24dp" />
+
 
             <!-- NUMBER LABEL -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
+                android:layout_marginTop="10dp"
                 android:text="CONTACT NUMBER:"
                 android:textColor="@android:color/white"
                 android:textStyle="bold" />
@@ -95,6 +94,33 @@
                     android:padding="12dp"
                     android:textColor="@android:color/black"
                     android:textColorHint="#7A7A7A"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- EMAIL LABEL -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="EMAIL:"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="10dp"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:boxBackgroundMode="none">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/contactEmailField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/input_field_bg"
+                    android:hint="email@example.com"
+                    android:padding="12dp"
+                    android:textColor="@android:color/black"
+                    android:textColorHint="#7A7A7A"/>
+
 
                 <!-- SPACER -->
                 <View
