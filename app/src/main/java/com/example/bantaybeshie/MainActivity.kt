@@ -393,21 +393,32 @@ class MainActivity : AppCompatActivity() {
 
         lastEmailAt = now
 
-        val contacts = ContactsDatabase.getDatabase(this)
-            .contactsDao().getAllContactsList()
-            .mapNotNull { it.email }
-            .filter { it.isNotBlank() }
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val contacts = ContactsDatabase.getDatabase(this@MainActivity)
+                    .contactsDao().getAllContactsList()
+                    .mapNotNull { it.email }
+                    .filter { it.isNotBlank() }
 
-        if (contacts.isEmpty()) {
-            Log.w("EMAIL", "No email contacts available")
-            return
+                if (contacts.isEmpty()) {
+                    Log.w("EMAIL", "No email contacts available")
+                    return@launch
+                }
+
+                val subject = "BantayBeshie Alert: $label"
+                val body = buildMessage(label, conf, sev, dist, loc)
+
+                // Switch to main thread to launch Gmail intent
+                launch(Dispatchers.Main) {
+                    sendEmailViaGmail(contacts, subject, body)
+                }
+
+            } catch (e: Exception) {
+                Log.e("EMAIL", "Failed: ${e.message}")
+            }
         }
-
-        val subject = "BantayBeshie Alert: $label"
-        val body = buildMessage(label, conf, sev, dist, loc)
-
-        sendEmailViaGmail(contacts, subject, body)
     }
+
 
     private fun sendEmailViaGmail(recipients: List<String>, subject: String, body: String) {
         val intent = Intent(Intent.ACTION_SEND).apply {
