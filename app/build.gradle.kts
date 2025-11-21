@@ -100,6 +100,9 @@ dependencies {
     implementation("com.sun.mail:android-activation:1.6.7")
     // Encrypted prefs for secure storage
     implementation("androidx.security:security-crypto:1.1.0-alpha03")
+    // Maps
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.maps.android:android-maps-utils:3.5.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

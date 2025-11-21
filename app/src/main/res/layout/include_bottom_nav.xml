@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bottomNavWrapper"
     android:layout_width="match_parent"
     android:layout_height="85dp"
@@ -37,7 +38,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:src="@drawable/ic_contacts"
-                android:tint="@android:color/white"/>
+                app:tint="@android:color/white"/>
         </RelativeLayout>
 
         <!-- ADD CONTACT -->
@@ -61,7 +62,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:src="@drawable/ic_add"
-                android:tint="@android:color/white"/>
+                app:tint="@android:color/white"/>
         </RelativeLayout>
 
         <!-- HOME -->
@@ -85,7 +86,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:src="@drawable/ic_home"
-                android:tint="@android:color/white"/>
+                app:tint="@android:color/white"/>
         </RelativeLayout>
 
         <!-- ACTIVITY LOG -->
@@ -109,7 +110,31 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:src="@drawable/ic_log"
-                android:tint="@android:color/white"/>
+                app:tint="@android:color/white"/>
+        </RelativeLayout>
+
+        <!-- SETTINGS -->
+        <RelativeLayout
+            android:id="@+id/navHeatmapWrapper"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <View
+                android:id="@+id/indicatorHeatmap"
+                android:layout_width="40dp"
+                android:layout_height="4dp"
+                android:background="@drawable/nav_indicator"
+                android:visibility="gone"
+                android:layout_alignParentBottom="true"/>
+
+            <ImageView
+                android:id="@+id/navHeatmap"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_heatmap"
+                app:tint="@android:color/white"/>
         </RelativeLayout>
 
         <!-- SETTINGS -->
@@ -133,7 +158,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:src="@drawable/ic_settings"
-                android:tint="@android:color/white"/>
+                app:tint="@android:color/white"/>
         </RelativeLayout>
 
     </LinearLayout>

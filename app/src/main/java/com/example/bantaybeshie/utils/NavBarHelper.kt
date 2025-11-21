@@ -13,7 +13,8 @@ object NavBarHelper {
             "contacts" to view.findViewById<View>(R.id.navContactsWrapper),
             "home" to view.findViewById<View>(R.id.navHomeWrapper),
             "logs" to view.findViewById<View>(R.id.navActivityLogWrapper),
-            "settings" to view.findViewById<View>(R.id.navSettingsWrapper)
+            "settings" to view.findViewById<View>(R.id.navSettingsWrapper),
+            "heatmap" to view.findViewById<View>(R.id.navHeatmapWrapper)
         )
 
         val indicators = mapOf(
@@ -21,7 +22,8 @@ object NavBarHelper {
             "contacts" to view.findViewById<View>(R.id.indicatorContacts),
             "home" to view.findViewById<View>(R.id.indicatorHome),
             "logs" to view.findViewById<View>(R.id.indicatorLogs),
-            "settings" to view.findViewById<View>(R.id.indicatorSettings)
+            "settings" to view.findViewById<View>(R.id.indicatorSettings),
+            "heatmap" to view.findViewById<View>(R.id.indicatorHeatmap)
         )
 
         // Hide all indicators first
@@ -46,5 +48,9 @@ object NavBarHelper {
         wrappers["settings"]?.setOnClickListener {
             navController.navigate(R.id.settingsFragment)
         }
+        wrappers["heatmap"]?.setOnClickListener {
+            navController.navigate(R.id.heatmapFragment)
+        }
+
     }
 }
