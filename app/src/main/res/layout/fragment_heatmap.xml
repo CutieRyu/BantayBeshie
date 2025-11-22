@@ -71,7 +71,6 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_marginLeft="16dp"
-                android:background="@drawable/bg_map_button"
                 android:padding="12dp"
                 android:src="@drawable/ic_layers"/>
         </LinearLayout>

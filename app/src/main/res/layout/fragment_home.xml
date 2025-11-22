@@ -28,17 +28,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <androidx.camera.view.PreviewView
-                android:id="@+id/previewView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:keepScreenOn="true"/>
-
             <com.example.bantaybeshie.ui.OverlayView
                 android:id="@+id/overlayView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@android:color/transparent"/>
+
+            <com.example.bantaybeshie.ui.MjpegView
+                android:id="@+id/mjpegView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
             <TextView
                 android:id="@+id/resultText"
@@ -106,6 +105,8 @@
                 app:cornerRadius="16dp"/>
         </androidx.gridlayout.widget.GridLayout>
 
+
+
         <!-- MATERIAL SWITCH -->
         <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/switchDetection"
@@ -116,10 +117,44 @@
             android:textSize="16sp"
             android:checked="true"
             android:layout_marginTop="12dp"
-            app:layout_constraintTop_toBottomOf="@id/modeButtons"
+            app:layout_constraintTop_toBottomOf="@id/btnSnapshot"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSnapshot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📸 Snapshot"
+            android:layout_marginTop="12dp"
+            app:cornerRadius="16dp"
+            app:backgroundTint="@color/purple_500"
+            android:textColor="@android:color/white"
+            app:icon="@drawable/ic_camera"
+            app:iconPadding="8dp"
+            app:iconTint="@android:color/white"
+            app:layout_constraintTop_toBottomOf="@id/modeButtons"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnViewSnapshots"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnViewSnapshots"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🖼️ Gallery"
+            android:layout_marginTop="12dp"
+            app:cornerRadius="16dp"
+            app:backgroundTint="@color/teal_400"
+            android:textColor="@android:color/white"
+            app:icon="@drawable/ic_gallery"
+            app:iconPadding="8dp"
+            app:iconTint="@android:color/white"
+            app:layout_constraintTop_toBottomOf="@id/modeButtons"
+            app:layout_constraintStart_toEndOf="@id/btnSnapshot"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

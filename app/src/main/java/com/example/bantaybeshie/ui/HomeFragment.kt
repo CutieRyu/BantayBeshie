@@ -6,17 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.appcompat.widget.SwitchCompat
-import androidx.camera.view.PreviewView
 import androidx.fragment.app.Fragment
 import com.example.bantaybeshie.MainActivity
 import com.example.bantaybeshie.R
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.materialswitch.MaterialSwitch
+import android.widget.Toast
+import androidx.navigation.fragment.findNavController
+import com.example.bantaybeshie.ui.MjpegView
 
 class HomeFragment : Fragment() {
 
-    private var previewView: PreviewView? = null
     private var overlayView: OverlayView? = null
     private var resultText: TextView? = null
     private var scenarioWalking: MaterialButton? = null
@@ -24,6 +24,8 @@ class HomeFragment : Fragment() {
     private var scenarioTranspo: MaterialButton? = null
     private var btnSOS: MaterialButton? = null
     private var switchDetection: MaterialSwitch? = null
+    private var mjpegView: MjpegView? = null
+
 
     private var act: MainActivity? = null
 
@@ -38,8 +40,6 @@ class HomeFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
-        // Bind UI
-        previewView = view.findViewById(R.id.previewView)
         overlayView = view.findViewById(R.id.overlayView)
         resultText = view.findViewById(R.id.resultText)
 
@@ -55,24 +55,27 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Attach camera views to MainActivity
+        // Attach camera views to MainActivity - CORRECT ORDER
         act?.attachHomeViews(
-            previewView!!,
-            overlayView!!,
-            resultText!!
+            overlay = overlayView!!,
+            resultText = resultText!!
         )
 
 
+        // SCENARIO BUTTONS ---------------------
         scenarioWalking?.setOnClickListener {
             act?.setScenarioNormal()
+            Toast.makeText(requireContext(), "Scenario: Walking", Toast.LENGTH_SHORT).show()
         }
 
         scenarioRoom?.setOnClickListener {
             act?.setScenarioCrowded()
+            Toast.makeText(requireContext(), "Scenario: Room", Toast.LENGTH_SHORT).show()
         }
 
         scenarioTranspo?.setOnClickListener {
             act?.setScenarioNight()
+            Toast.makeText(requireContext(), "Scenario: Transportation", Toast.LENGTH_SHORT).show()
         }
 
         btnSOS?.setOnClickListener {
@@ -80,23 +83,35 @@ class HomeFragment : Fragment() {
             act?.triggerManualSOS()
         }
 
-        // ============================
-        // DETECTION SWITCH
-        // ============================
+        // DETECTION TOGGLE ----------------------
         switchDetection?.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                act?.enableDetection()
-            } else {
-                act?.disableDetection()
-            }
+            if (isChecked) act?.enableDetection()
+            else act?.disableDetection()
+        }
+
+        // SNAPSHOT BUTTONS ----------------------
+        val btnSnapshot = view.findViewById<MaterialButton>(R.id.btnSnapshot)
+        val btnViewSnapshots = view.findViewById<MaterialButton>(R.id.btnViewSnapshots)
+
+        btnSnapshot.setOnClickListener {
+            val path = act?.takeSnapshot()
+            if (path != null)
+                Toast.makeText(requireContext(), "Snapshot saved!", Toast.LENGTH_SHORT).show()
+            else
+                Toast.makeText(requireContext(), "No frame available yet.", Toast.LENGTH_SHORT).show()
+        }
+
+        btnViewSnapshots.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_snapshotFragment)
         }
     }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()
         act?.detachHomeViews()
 
-        previewView = null
         overlayView = null
         resultText = null
         scenarioWalking = null

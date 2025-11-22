@@ -1,116 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/nav_graph"
-        app:startDestination="@id/homeFragment">
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
 
-        <!-- ========================= -->
-        <!--       MAIN SCREENS        -->
-        <!-- These use Bottom Nav      -->
-        <!-- ========================= -->
+    <!-- ========================= -->
+    <!--       MAIN SCREENS        -->
+    <!-- These use Bottom Nav      -->
+    <!-- ========================= -->
 
-        <fragment
-            android:id="@+id/homeFragment"
-            android:name="com.example.bantaybeshie.ui.HomeFragment"
-            android:label="Home"
-            tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.bantaybeshie.ui.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home">
+        <action
+        android:id="@+id/action_homeFragment_to_snapshotFragment"
+        app:destination="@id/snapshotFragment" />
+    </fragment>
 
-        <fragment
-            android:id="@+id/contactsFragment"
-            android:name="com.example.bantaybeshie.ui.ContactsFragment"
-            android:label="Contacts"
-            tools:layout="@layout/fragment_contacts">
+    <fragment
+        android:id="@+id/contactsFragment"
+        android:name="com.example.bantaybeshie.ui.ContactsFragment"
+        android:label="Contacts"
+        tools:layout="@layout/fragment_contacts">
 
-            <action
-                android:id="@+id/action_contactsFragment_to_addContactFragment"
-                app:destination="@id/addContactFragment" />
-        </fragment>
+        <action
+            android:id="@+id/action_contactsFragment_to_addContactFragment"
+            app:destination="@id/addContactFragment" />
+    </fragment>
 
-        <fragment
-            android:id="@+id/activityLogFragment"
-            android:name="com.example.bantaybeshie.ui.ActivityLogFragment"
-            android:label="Activity Log"
-            tools:layout="@layout/fragment_activity_log" />
+    <fragment
+        android:id="@+id/activityLogFragment"
+        android:name="com.example.bantaybeshie.ui.ActivityLogFragment"
+        android:label="Activity Log"
+        tools:layout="@layout/fragment_activity_log" />
 
-        <fragment
-            android:id="@+id/notificationsFragment"
-            android:name="com.example.bantaybeshie.ui.NotificationsFragment"
-            android:label="Notifications"
-            tools:layout="@layout/fragment_notifications" />
+    <fragment
+        android:id="@+id/notificationsFragment"
+        android:name="com.example.bantaybeshie.ui.NotificationsFragment"
+        android:label="Notifications"
+        tools:layout="@layout/fragment_notifications" />
 
-        <fragment
-            android:id="@+id/settingsFragment"
-            android:name="com.example.bantaybeshie.ui.SettingsFragment"
-            android:label="Settings"
-            tools:layout="@layout/fragment_settings"/>
+    <fragment
+        android:id="@+id/heatmapFragment"
+        android:name="com.example.bantaybeshie.ui.HeatmapFragment"
+        android:label="Heatmap"
+        tools:layout="@layout/fragment_heatmap"/>
 
-        <fragment
-            android:id="@+id/heatmapFragment"
-            android:name="com.example.bantaybeshie.ui.HeatmapFragment"
-            android:label="Heatmap"
-            tools:layout="@layout/fragment_heatmap">
+    <fragment
+    android:id="@+id/snapshotFragment"
+    android:name="com.example.bantaybeshie.ui.SnapshotFragment"
+    android:label="Snapshot"
+    tools:layout="@layout/fragment_snapshot"/>
 
-    <!-- Settings → Sub-pages only -->
-            <action
-                android:id="@+id/action_settingsFragment_to_profileFragment"
-                app:destination="@id/profileFragment" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.bantaybeshie.ui.SettingsFragment"
+        android:label="Settings"
+        tools:layout="@layout/fragment_settings">
 
-            <action
-                android:id="@+id/action_settingsFragment_to_generalSettingsFragment"
-                app:destination="@id/generalSettingsFragment" />
+        <!-- Settings → Sub-pages only -->
+        <action
+            android:id="@+id/action_settingsFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
 
-            <action
-                android:id="@+id/action_settingsFragment_to_privacyFragment"
-                app:destination="@id/privacyFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_generalSettingsFragment"
+            app:destination="@id/generalSettingsFragment" />
 
-            <action
-                android:id="@+id/action_settingsFragment_to_helpFragment"
-                app:destination="@id/helpFragment" />
-            <action
-                android:id="@+id/action_settingsFragment_to_notificationsFragment"
-                app:destination="@id/notificationsFragment" />
-        </fragment>
+        <action
+            android:id="@+id/action_settingsFragment_to_privacyFragment"
+            app:destination="@id/privacyFragment" />
+
+        <action
+            android:id="@+id/action_settingsFragment_to_helpFragment"
+            app:destination="@id/helpFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_notificationsFragment"
+            app:destination="@id/notificationsFragment" />
+    </fragment>
 
 
-        <!-- ========================= -->
-        <!--      SETTINGS SUBPAGES    -->
-        <!-- No bottom nav actions     -->
-        <!-- Back navigates to Settings -->
-        <!-- ========================= -->
+    <!-- ========================= -->
+    <!--      SETTINGS SUBPAGES    -->
+    <!-- No bottom nav actions     -->
+    <!-- Back navigates to Settings -->
+    <!-- ========================= -->
 
-        <fragment
-            android:id="@+id/profileFragment"
-            android:name="com.example.bantaybeshie.ui.settings.ProfileFragment"
-            android:label="Profile"
-            tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.bantaybeshie.ui.settings.ProfileFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile" />
 
-        <fragment
-            android:id="@+id/generalSettingsFragment"
-            android:name="com.example.bantaybeshie.ui.settings.GeneralSettingsFragment"
-            android:label="General Settings"
-            tools:layout="@layout/fragment_general_settings" />
+    <fragment
+        android:id="@+id/generalSettingsFragment"
+        android:name="com.example.bantaybeshie.ui.settings.GeneralSettingsFragment"
+        android:label="General Settings"
+        tools:layout="@layout/fragment_general_settings" />
 
-        <fragment
-            android:id="@+id/privacyFragment"
-            android:name="com.example.bantaybeshie.ui.settings.PrivacyFragment"
-            android:label="Privacy and Security"
-            tools:layout="@layout/fragment_privacy" />
+    <fragment
+        android:id="@+id/privacyFragment"
+        android:name="com.example.bantaybeshie.ui.settings.PrivacyFragment"
+        android:label="Privacy and Security"
+        tools:layout="@layout/fragment_privacy" />
 
-        <fragment
-            android:id="@+id/helpFragment"
-            android:name="com.example.bantaybeshie.ui.settings.HelpFragment"
-            android:label="Help and Support"
-            tools:layout="@layout/fragment_help" />
+    <fragment
+        android:id="@+id/helpFragment"
+        android:name="com.example.bantaybeshie.ui.settings.HelpFragment"
+        android:label="Help and Support"
+        tools:layout="@layout/fragment_help" />
 
-        <!-- ========================= -->
-        <!--         ADD CONTACT       -->
-        <!-- (only from Contacts)      -->
-        <!-- ========================= -->
-        <fragment
-            android:id="@+id/addContactFragment"
-            android:name="com.example.bantaybeshie.ui.contacts.AddContactFragment"
-            android:label="Add Contact"
-            tools:layout="@layout/fragment_add_contact" />
-
-    </navigation>
+    <!-- ========================= -->
+    <!--         ADD CONTACT       -->
+    <!-- (only from Contacts)      -->
+    <!-- ========================= -->
+    <fragment
+        android:id="@+id/addContactFragment"
+        android:name="com.example.bantaybeshie.ui.contacts.AddContactFragment"
+        android:label="Add Contact"
+        tools:layout="@layout/fragment_add_contact" />
+</navigation>
